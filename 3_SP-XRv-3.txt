@@ -1,0 +1,221 @@
+!! IOS XR Configuration 7.0.1
+!! Last configuration change at Wed Dec 11 12:39:22 2019 by nmaxi
+!
+hostname SP-XRv-3
+domain lookup disable
+username nmaxi
+ group root-lr
+ group cisco-support
+ secret 10 $6$cpMmU/BaAM714U/.$KOs7j8c1EU0eoubyqs4ODPQx6F2yxooUIp1yvWDnl0BogzUQ1.epI.chv29qpMquJX3fE6ITagOn2QlgU5Ad/.
+!
+vrf CustC
+ rd 10000:3
+ address-family ipv4 unicast
+  import route-target
+   172.30.255.4:3
+  !
+  export route-target
+   172.30.255.3:3
+  !
+ !
+!
+line console
+ exec-timeout 0 0
+ width 133
+ length 26
+!
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+interface Loopback0
+ no shutdown
+ ipv4 address 172.30.255.3 255.255.255.255
+!
+interface Loopback6502413
+ no shutdown
+ vrf CustC
+ ipv4 address 172.24.24.3 255.255.255.255
+!
+interface MgmtEth0/RP0/CPU0/0
+ no shutdown
+ shutdown
+!
+interface GigabitEthernet0/0/0/0
+ no shutdown
+ shutdown
+!
+interface GigabitEthernet0/0/0/1
+ no shutdown
+ ipv4 address 10.3.5.3 255.255.255.0
+!
+interface GigabitEthernet0/0/0/2
+ no shutdown
+ shutdown
+!
+interface GigabitEthernet0/0/0/3
+ no shutdown
+ ipv4 address 10.3.6.3 255.255.255.0
+!
+interface GigabitEthernet0/0/0/4
+ no shutdown
+ vrf CustC
+ ipv4 address 172.24.13.3 255.255.255.0
+!
+interface GigabitEthernet0/0/0/5
+ no shutdown
+ vrf CustC
+ ipv4 address 172.24.113.3 255.255.255.0
+!
+interface GigabitEthernet0/0/0/6
+ no shutdown
+ vrf CustC
+ ipv4 address 172.24.23.3 255.255.255.0
+!
+interface GigabitEthernet0/0/0/7
+ no shutdown
+ shutdown
+!
+interface GigabitEthernet0/0/0/8
+ no shutdown
+ shutdown
+!
+route-policy PASS_ALL
+  pass
+end-policy
+!
+router static
+ vrf CustC
+  address-family ipv4 unicast
+   172.24.24.1/32 GigabitEthernet0/0/0/4 172.24.13.1
+   172.24.24.1/32 GigabitEthernet0/0/0/5 172.24.113.1
+  !
+ !
+!
+router isis 10000
+ is-type level-2-only
+ net 47.0010.0000.0000.0003.00
+ log adjacency changes
+ address-family ipv4 unicast
+  metric-style wide
+  advertise passive-only
+  segment-routing mpls
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+   prefix-sid index 3
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  address-family ipv4 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/3
+  address-family ipv4 unicast
+  !
+ !
+!
+router bgp 10000
+ bgp router-id 172.30.255.3
+ bgp cluster-id 172.30.255.3
+ bgp log neighbor changes detail
+ address-family vpnv4 unicast
+ !
+ address-family l2vpn evpn
+ !
+ neighbor 172.30.255.1
+  remote-as 10000
+  update-source Loopback0
+  address-family vpnv4 unicast
+   route-reflector-client
+  !
+  address-family l2vpn evpn
+   route-reflector-client
+  !
+ !
+ neighbor 172.30.255.2
+  remote-as 10000
+  update-source Loopback0
+  address-family vpnv4 unicast
+   route-reflector-client
+  !
+  address-family l2vpn evpn
+   route-reflector-client
+  !
+ !
+ neighbor 172.30.255.4
+  remote-as 10000
+  update-source Loopback0
+  address-family vpnv4 unicast
+  !
+  address-family l2vpn evpn
+  !
+ !
+ vrf CustC
+  rd 10000:3
+  address-family ipv4 unicast
+  !
+  neighbor 172.24.23.2
+   remote-as 65024
+   address-family ipv4 unicast
+    route-policy PASS_ALL in
+    route-policy PASS_ALL out
+    as-override
+    site-of-origin 65024:12
+   !
+  !
+  neighbor 172.24.24.1
+   remote-as 65024
+   ebgp-multihop 2
+   update-source Loopback6502413
+   address-family ipv4 unicast
+    route-policy PASS_ALL in
+    route-policy PASS_ALL out
+    as-override
+    site-of-origin 65024:12
+   !
+  !
+ !
+!
+segment-routing
+!
+mpls label range table 0 300000 399999
+!
+banner exec ^C
+***********************************************************************************
+* Segment-Routing and MPLS VPNs (EVPN, L3VPN)                                     *
+* Copyright (C) 2019  Navid Yahyapour (NMAXi)                                     *
+* This configuration file is free: you can redistribute it and/or modify it.      *
+* This config file is distributed in the hope that it will be useful, but WITHOUT *
+* ANY WARRANTY; Without even the implied warranty of MERCHANTABILITY or FITNESS   *
+* FOR A PARTICULAR PURPOSE. (The same as GNU General Public License!)             * 
+* My LinkedIn profile:  <https://www.linkedin.com/in/navid-yahyapour/>.           *
+***********************************************************************************^C
+banner incoming ^C
+***********************************************************************************
+* Segment-Routing and MPLS VPNs (EVPN, L3VPN)                                     *
+* Copyright (C) 2019  Navid Yahyapour (NMAXi)                                     *
+* This configuration file is free: you can redistribute it and/or modify it.      *
+* This config file is distributed in the hope that it will be useful, but WITHOUT *
+* ANY WARRANTY; Without even the implied warranty of MERCHANTABILITY or FITNESS   *
+* FOR A PARTICULAR PURPOSE. (The same as GNU General Public License!)             * 
+* My LinkedIn profile:  <https://www.linkedin.com/in/navid-yahyapour/>.           *
+***********************************************************************************^C
+banner login ^C
+***********************************************************************************
+* Segment-Routing and MPLS VPNs (EVPN, L3VPN)                                     *
+* Copyright (C) 2019  Navid Yahyapour (NMAXi)                                     *
+* This configuration file is free: you can redistribute it and/or modify it.      *
+* This config file is distributed in the hope that it will be useful, but WITHOUT *
+* ANY WARRANTY; Without even the implied warranty of MERCHANTABILITY or FITNESS   *
+* FOR A PARTICULAR PURPOSE. (The same as GNU General Public License!)             * 
+* My LinkedIn profile:  <https://www.linkedin.com/in/navid-yahyapour/>.           *
+***********************************************************************************^C
+!
+end
+

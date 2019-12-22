@@ -1,0 +1,374 @@
+!
+! Last configuration change at 12:41:31 UTC Wed Dec 11 2019
+!
+version 16.12
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service call-home
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname SP-CSR-1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+call-home
+ ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com
+ ! the email address configured in Cisco Smart License Portal will be used as contact email address to send SCH notifications.
+ contact-email-addr sch-smart-licensing@cisco.com
+ profile "CiscoTAC-1"
+  active
+  destination transport-method http
+  no destination transport-method email
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+!
+!
+!
+login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+!
+mpls label range 100000 199999
+multilink bundle-name authenticated
+l2vpn evpn
+ replication-type ingress
+ mpls label mode per-ce
+ router-id Loopback0
+!
+l2vpn evpn instance 1 vlan-based
+ rd 10000:1
+ route-target export 10000:1
+ route-target import 10000:1
+ no auto-route-target
+!
+l2vpn evpn instance 2 vlan-based
+ rd 10000:2
+ route-target export 10000:2
+ route-target import 10000:2
+ no auto-route-target
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-907028711
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-907028711
+ revocation-check none
+ rsakeypair TP-self-signed-907028711
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+!
+!
+diagnostic bootup level minimal
+memory free low-watermark processor 72406
+!
+!
+spanning-tree extend system-id
+!
+!
+redundancy
+bridge-domain 1 
+ member GigabitEthernet2 service-instance 1
+ member evpn-instance 1
+!
+bridge-domain 2 
+ member Port-channel2 service-instance 2
+ member evpn-instance 2
+!
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ no shutdown
+ ip address 172.30.255.1 255.255.255.255
+!
+interface Port-channel2
+ no shutdown
+ no ip address
+ no negotiation auto
+ no mop enabled
+ no mop sysid
+ evpn ethernet-segment 2
+  identifier type 3 system-mac bbbb.1111.1111
+  redundancy all-active
+ service instance 2 ethernet
+  encapsulation untagged
+ !
+!
+interface GigabitEthernet1
+ no shutdown
+ ip address 10.1.6.1 255.255.255.0
+ ip router isis 10000
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ no shutdown
+ no ip address
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ service instance 1 ethernet
+  encapsulation untagged
+ !
+!
+interface GigabitEthernet3
+ no shutdown
+ ip address 10.1.5.1 255.255.255.0
+ ip router isis 10000
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet4
+ no shutdown
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet5
+ no shutdown
+ no ip address
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ isis network point-to-point 
+ isis three-way-handshake cisco
+ channel-group 2
+!
+interface GigabitEthernet6
+ no shutdown
+ no ip address
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ isis network point-to-point 
+ isis three-way-handshake cisco
+ channel-group 2
+!
+interface GigabitEthernet7
+ no shutdown
+ no ip address
+ negotiation auto
+ no keepalive
+ no mop enabled
+ no mop sysid
+ service instance 4 ethernet
+  encapsulation untagged
+ !
+!
+interface GigabitEthernet8
+ no shutdown
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet9
+ no shutdown
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet10
+ no shutdown
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet11
+ no shutdown
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet12
+ no shutdown
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+!
+segment-routing mpls
+ !
+ connected-prefix-sid-map
+  address-family ipv4
+   172.30.255.1/32 index 1 range 1 
+  exit-address-family
+ !
+!
+router isis 10000
+ net 47.0010.0000.0000.0001.00
+ is-type level-2-only
+ advertise passive-only
+ metric-style wide
+ log-adjacency-changes all
+ segment-routing mpls
+ passive-interface Loopback0
+!
+router bgp 10000
+ bgp router-id 172.30.255.1
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 172.30.255.3 remote-as 10000
+ neighbor 172.30.255.3 update-source Loopback0
+ neighbor 172.30.255.4 remote-as 10000
+ neighbor 172.30.255.4 update-source Loopback0
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 172.30.255.3 activate
+  neighbor 172.30.255.3 send-community extended
+  neighbor 172.30.255.4 activate
+  neighbor 172.30.255.4 send-community extended
+ exit-address-family
+ !
+ address-family l2vpn evpn
+  neighbor 172.30.255.3 activate
+  neighbor 172.30.255.3 send-community both
+  neighbor 172.30.255.4 activate
+  neighbor 172.30.255.4 send-community both
+ exit-address-family
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+!
+!
+!
+!
+!
+l2vpn evpn instance 4 point-to-point
+ rd 10000:4
+ vpws context CustD-VPWS
+  service target 24 source 14
+  member GigabitEthernet7 service-instance 4
+ !
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ length 26
+ width 133
+ stopbits 1
+line vty 0 4
+ login
+!
+!
+banner exec ^C
+***********************************************************************************
+* Segment-Routing and MPLS VPNs (EVPN, L3VPN)                                     *
+* Copyright (C) 2019  Navid Yahyapour (NMAXi)                                     *
+* This configuration file is free: you can redistribute it and/or modify it.      *
+* This config file is distributed in the hope that it will be useful, but WITHOUT *
+* ANY WARRANTY; Without even the implied warranty of MERCHANTABILITY or FITNESS   *
+* FOR A PARTICULAR PURPOSE. (The same as GNU General Public License!)             * 
+* My LinkedIn profile:  <https://www.linkedin.com/in/navid-yahyapour/>.           *
+***********************************************************************************^C
+banner incoming ^C
+***********************************************************************************
+* Segment-Routing and MPLS VPNs (EVPN, L3VPN)                                     *
+* Copyright (C) 2019  Navid Yahyapour (NMAXi)                                     *
+* This configuration file is free: you can redistribute it and/or modify it.      *
+* This config file is distributed in the hope that it will be useful, but WITHOUT *
+* ANY WARRANTY; Without even the implied warranty of MERCHANTABILITY or FITNESS   *
+* FOR A PARTICULAR PURPOSE. (The same as GNU General Public License!)             * 
+* My LinkedIn profile:  <https://www.linkedin.com/in/navid-yahyapour/>.           *
+***********************************************************************************^C
+banner login ^C
+***********************************************************************************
+* Segment-Routing and MPLS VPNs (EVPN, L3VPN)                                     *
+* Copyright (C) 2019  Navid Yahyapour (NMAXi)                                     *
+* This configuration file is free: you can redistribute it and/or modify it.      *
+* This config file is distributed in the hope that it will be useful, but WITHOUT *
+* ANY WARRANTY; Without even the implied warranty of MERCHANTABILITY or FITNESS   *
+* FOR A PARTICULAR PURPOSE. (The same as GNU General Public License!)             * 
+* My LinkedIn profile:  <https://www.linkedin.com/in/navid-yahyapour/>.           *
+***********************************************************************************^C
+!
+!
+!
+!
+end

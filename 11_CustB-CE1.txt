@@ -1,0 +1,181 @@
+
+!
+! Last configuration change at 16:37:32 +0330 Wed Dec 11 2019
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname CustB-CE1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+clock timezone +0330 3 30
+!
+!
+!
+!
+!
+no ip icmp rate-limit unreachable
+!
+!
+!
+no ip domain-lookup
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Port-channel1
+ no shutdown
+ no switchport
+ mac-address cccc.1111.1111
+ ip address 192.168.20.1 255.255.255.0
+!
+interface Ethernet0/0
+ no shutdown
+ no switchport
+ no ip address
+ channel-group 1 mode on
+!
+interface Ethernet0/1
+ no shutdown
+ no switchport
+ no ip address
+ channel-group 1 mode on
+!
+interface Ethernet0/2
+ no shutdown
+ shutdown
+!
+interface Ethernet0/3
+ no shutdown
+ shutdown
+!
+interface Ethernet1/0
+ no shutdown
+ shutdown
+!
+interface Ethernet1/1
+ no shutdown
+ shutdown
+!
+interface Ethernet1/2
+ no shutdown
+ shutdown
+!
+interface Ethernet1/3
+ no shutdown
+ shutdown
+!
+interface Ethernet2/0
+ no shutdown
+ shutdown
+!
+interface Ethernet2/1
+ no shutdown
+ shutdown
+!
+interface Ethernet2/2
+ no shutdown
+ shutdown
+!
+interface Ethernet2/3
+ no shutdown
+ shutdown
+!
+interface Ethernet3/0
+ no shutdown
+ shutdown
+!
+interface Ethernet3/1
+ no shutdown
+ shutdown
+!
+interface Ethernet3/2
+ no shutdown
+ shutdown
+!
+interface Ethernet3/3
+ no shutdown
+ shutdown
+!
+ip forward-protocol nd
+!
+ip http server
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ length 26
+ width 133
+line aux 0
+line vty 0 4
+ login
+!
+banner exec ^C
+***********************************************************************************
+* Segment-Routing and MPLS VPNs (EVPN, L3VPN)                                     *
+* Copyright (C) 2019  Navid Yahyapour (NMAXi)                                     *
+* This configuration file is free: you can redistribute it and/or modify it.      *
+* This config file is distributed in the hope that it will be useful, but WITHOUT *
+* ANY WARRANTY; Without even the implied warranty of MERCHANTABILITY or FITNESS   *
+* FOR A PARTICULAR PURPOSE. (The same as GNU General Public License!)             * 
+* My LinkedIn profile:  <https://www.linkedin.com/in/navid-yahyapour/>.           *
+***********************************************************************************^C
+banner incoming ^C
+***********************************************************************************
+* Segment-Routing and MPLS VPNs (EVPN, L3VPN)                                     *
+* Copyright (C) 2019  Navid Yahyapour (NMAXi)                                     *
+* This configuration file is free: you can redistribute it and/or modify it.      *
+* This config file is distributed in the hope that it will be useful, but WITHOUT *
+* ANY WARRANTY; Without even the implied warranty of MERCHANTABILITY or FITNESS   *
+* FOR A PARTICULAR PURPOSE. (The same as GNU General Public License!)             * 
+* My LinkedIn profile:  <https://www.linkedin.com/in/navid-yahyapour/>.           *
+***********************************************************************************^C
+banner login ^C
+***********************************************************************************
+* Segment-Routing and MPLS VPNs (EVPN, L3VPN)                                     *
+* Copyright (C) 2019  Navid Yahyapour (NMAXi)                                     *
+* This configuration file is free: you can redistribute it and/or modify it.      *
+* This config file is distributed in the hope that it will be useful, but WITHOUT *
+* ANY WARRANTY; Without even the implied warranty of MERCHANTABILITY or FITNESS   *
+* FOR A PARTICULAR PURPOSE. (The same as GNU General Public License!)             * 
+* My LinkedIn profile:  <https://www.linkedin.com/in/navid-yahyapour/>.           *
+***********************************************************************************^C
+!
+!
+end
